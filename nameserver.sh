@@ -25,24 +25,93 @@
     END=`echo "\033[0m"`
 # ~~~~~~~~~~  Environment Setup ~~~~~~~~~~ #
 
+########################### Install Bind9 if its not installed ################################
+install_fn(){
 if [ ! -x /etc/bind ];then
-echo -e "$warn\nNeed to install Bind9"
+echo "$warn\nYou need to install Bind9"
+  sleep 1
+  echo "$q\nDo you want to do it now? (y/n)"
+  read var
+    if [ $var = y ];then
+    sudo apt-get install bind9 -y
+    clear
+    nameservers_fn
+    else
+    clear
+    nameservers_fn
+    fi
+fi
+clear
+nameservers_fn
+}
+########################### Checking /eth/network/interfaces for DNS-servers ################################
+nameservers_fn(){
+content=$( cat /etc/network/interfaces | grep dns-nameservers)
+if [ "$?" = 0 ]
+then
+echo "$q\nyou seem to already have an configured DNS-server.. do you wish to proceed adding zones? (y/n)"
+  read dns
+    if [ $dns = y ];then
+    clear
+    zones_fn
+    else
+    clear
+    show_menu
+    fi
+else
+clear
+show_menu
+fi
+clear
+interfaces_fn
+}
+########################### Checking /eth/network/interfaces if DNS-servers are correct ################################
+dnsnames_fn(){
+content=$( cat /etc/network/interfaces | grep dns-nameservers)
+if [ "$?" = 0 ]
+then
+  echo "$q\nplease check that = $content is correct!? (y/n)"
+  read dns
+    if [ $dns = y ];then
+    clear
+    zones_fn
+else
+clear
+interfaces
+fi
+    fi
+}
+########################### Adding DNS-servers to /eth/network/interfaces ################################
+interfaces_fn(){
+echo "${MENU}$q\nDo you whan to set DNS-servername to localhost in the network interfaces ( recomended! )? (y/n)${END}"
+read vir
+if [ $vir = y ];then
+sudo echo "dns-nameservers 127.0.0.1" >> /etc/network/interfaces
+clear
+forwarders_fn
+else
+clear
+show_menu
+fi
+}
+
+installbind_fn(){
+if [ ! -x /etc/bind ];then
+echo "$warn\nYou need to install Bind9"
   sleep 1
   echo "$q\nDo you want to do it now? (y/n)"
   read var
     if [ $var = y ];then
     sudo apt-get install bind9 -y
     else
-    exit;
+    echo ""
     fi
 fi
-echo "${MENU}$q\nDo you whan to set DNS-servername to localhost in the network interfaces ( recomended! )? (y/n)${END}"
-read vir
-if [ $vir = y ];then
-sudo echo "dns-nameservers 127.0.0.1" >> /etc/network/interfaces
-fi
-
-
+clear
+zones_fn
+}
+########################### Setiing forwardes to google DNS in /etc/bind/named.conf.options for redundancy ################################
+forwarders_fn(){
 echo "${MENU}$q\nDo you whan to set forwarders to google DNS ( recomended! )? (y/n)${END}"
 read ver
 if [ $ver = y ];then
@@ -74,6 +143,11 @@ echo "options {
         listen-on-v6 { any; };
 };" > /etc/bind/named.conf.options
 fi
+clear
+zones_fn
+}
+########################### Adding new zones ################################
+zones_fn(){
 sudo cp /etc/bind/named.conf.local /etc/bind/named.conf.local.backup
 echo "${MENU}Please type in you dns name ( like... iamcool.com )${END}"
 read Site
@@ -101,3 +175,65 @@ sudo echo "; BIND reverse data file for empty rfc1918 zone
 @       IN      NS      localhost." > /etc/bind/db.$Site
 sudo service bind9 restart
 echo "${SUCCESS}All done!${END}"
+sleep 3
+controll=$(dig $Site | grep $Site)
+clear
+echo "plese verify your setup"
+echo $controll
+sleep 5
+clear
+show_menu
+}
+########################### Menu ################################
+clear
+show_menu(){
+    echo "${INTRO_TEXT} Nameserver is  DNS-server setup script    ${INTRO_TEXT}"
+    echo "${INTRO_TEXT}Created for Ubuntulinux by Pierre from Webbhatt  ${INTRO_TEXT}"
+    echo "${NORMAL}                                                    ${NORMAL}"
+    echo "${MENU}*****************NameserverBy*Pierre**************${NORMAL}"
+    echo "${NORMAL}                                                    ${NORMAL}"
+    echo "${MENU}*${NUMBER} 1)${MENU} Install DNS nameserver from scrach on a new server ${NORMAL}"
+    echo "${MENU}*${NUMBER} 2)${MENU} Install bind9 and add zones ${NORMAL}"
+    echo "${MENU}*${NUMBER} 3)${MENU} Add new zones  ${NORMAL}"
+    echo "${MENU}*${NUMBER} 4)${MENU} Delete zones ${NORMAL}"
+    echo "${NORMAL}                                                    ${NORMAL}"
+    echo "${MENU}*****************NameserverBy*Pierre**************${NORMAL}"
+    echo "${ENTER_LINE}Please enter a menu option and enter or ${RED_TEXT}enter to exit. ${NORMAL}"
+    read opt
+    while [ opt != '' ]
+    do
+    if [[ $opt = "" ]]; then 
+            exit;
+    else
+        case $opt in
+        1) clear;
+        install_fn;
+        ;;
+
+        2) clear;
+            install_fn;
+            ;;
+
+        3) clear;
+            zones_fn
+            ;;
+
+        4) clear;
+            null;
+            ;;
+
+        x)exit;
+        ;;
+
+        \n)exit;
+        ;;
+
+        *)clear;
+        show_menu;
+        ;;
+    esac
+fi
+done
+}
+clear
+show_menu
