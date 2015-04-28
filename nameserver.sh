@@ -104,7 +104,7 @@ echo "$warn\nYou need to install Bind9"
     if [ $var = y ];then
     sudo apt-get install bind9 -y
     else
-    echo ""
+  echo ""
     fi
 fi
 clear
@@ -180,9 +180,26 @@ controll=$(dig $Site | grep $Site)
 clear
 echo "plese verify your setup"
 echo $controll
-sleep 5
+sleep 7
 clear
 show_menu
+}
+
+delete_fn(){
+cd /etc/bind/
+seedb=$(ls db*)
+echo $seedb
+echo ""
+echo "type what zone you wish to remove (ex mysite.com without the db.)"
+read dbfile
+echo "$q\nAre you sure you want to delete the zone $dbfile? (y/n)"
+read vyr
+    if [ $vyr = y ];then
+    sudo rm -rf db.$dbfile
+    fi
+cat /etc/bind/named.conf.local| sed "/$dbfile/,+1 d" > /etc/bind/named.conf.local.new
+sudo cp /etc/bind/named.conf.local.new /etc/bind/named.conf.local
+show_menu 
 }
 ########################### Menu ################################
 clear
@@ -219,7 +236,7 @@ show_menu(){
             ;;
 
         4) clear;
-            null;
+            delete_fn;
             ;;
 
         x)exit;
