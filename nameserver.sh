@@ -17,9 +17,9 @@
     RED_TEXT=`echo "\033[31m"` #Red
     ENTER_LINE=`echo "\033[33m"`
     INTRO_TEXT=`echo "\033[32m"` #green and white text
-    INFOS=`echo "\033[103;30m"` #yellow bg
+    INFO=`echo "\033[103;30m"` #yellow bg
     SUCCESS=`echo "\033[102;30m"` #green bg
-    WARNING=`echo "\033[101;30m"` #red bg
+    MENU1=`echo "\033[101;30m"` #red bg
     WARP=`echo "\033[106;30m"` #lightblue bg
     BLACK=`echo "\033[109;30m"` #SPACE bg
     END=`echo "\033[0m"`
@@ -30,7 +30,7 @@ install_fn(){
 if [ ! -x /etc/bind ];then
 echo "$warn\nYou need to install Bind9"
   sleep 1
-  echo "${MENU}$q\nDo you want to do it now? (y/n)"
+  echo "${MENU}q\nDo you want to do it now? (y/n)${END}"
 echo "1" > install.log
   read var
     if [ $var = y ];then
@@ -50,7 +50,7 @@ nameservers_fn(){
 content=$( cat /etc/network/interfaces | grep dns-nameservers)
 if [ "$?" = 0 ]
 then
-echo "${MENU}$q\nyou seem to already have an configured DNS-server.. do you wish to proceed adding zones? (y/n)${END}"
+echo "${MENU}q\nyou seem to already have an configured DNS-server.. do you wish to proceed adding zones? (y/n)${END}"
   read dns
     if [ $dns = y ];then
     clear
@@ -69,7 +69,7 @@ dnsnames_fn(){
 content=$( cat /etc/network/interfaces | grep dns-nameservers)
 if [ "$?" = 0 ]
 then
-  echo "${MENU}$q\nplease check that = $content is correct!? (y/n)${END}"
+  echo "${MENU}q\nplease check that = $content is correct!? (y/n)${END}"
   read dns
     if [ $dns = y ];then
     clear
@@ -84,21 +84,22 @@ fi
 ################################ Adding DNS-servers to /eth/network/interfaces #########################################
 
 interfaces_fn(){
-echo "${INFOS}$Controlling your setup.....${END}"
+echo "${NUMBER}Controlling your setup.....${END}"
 netwok=$( cat /etc/network/interfaces | address)
 if [ "$?" = 0 ]
 then 
 echo""
 else
 clear
- echo "${WARNING}$You have not set an static IP address! DNS-server will not be reacheble if this machine changes IP all the time.${END}"
+ echo "${FGRED}You have not set an static IP address! DNS-server will not be reacheble if this machine changes IP all the time.${END}"
  sleep 6
 fi
-echo "${MENU}$q\nDo you whan to set DNS-servername to localhost in the network interfaces ( recomended! )? (y/n)${END}"
+echo "${MENU}q\nDo you whan to set DNS-servername to localhost in the network interfaces ( recomended! )? (y/n)${END}"
 read vir
 if [ $vir = y ];then
 sudo echo "dns-nameservers 127.0.0.1" >> /etc/network/interfaces
-echo "${INFOS}$ Restarting network card ${END}"
+echo 
+echo "${NUMBER} Restarting network card ${END}"
 sudo /etc/init.d/networking restart
 sleep 2
 clear
@@ -115,7 +116,7 @@ installbind_fn(){
 if [ ! -x /etc/bind ];then
 echo "$warn\nYou need to install Bind9"
   sleep 1
-  echo "${MENU}$q\nDo you want to do it now? (y/n)${END}"
+  echo "${MENU}q\nDo you want to do it now? (y/n)${END}"
   read vaar
     if [ $vaar = y ];then
     sudo apt-get install bind9 -y
@@ -124,8 +125,9 @@ echo "$warn\nYou need to install Bind9"
     show_menu
     fi
 else
-echo "Bind9 is already installed on this machine..."
-sleep 3
+echo "${MENU}Bind9 is already installed on this server.. if you made an uninstall ${END}"
+echo "${MENU}of bind9 then make sure to do an apt-get purge bind9a                ${END}"
+sleep 6
 clear
 show_menu
 fi
@@ -134,7 +136,7 @@ zones_fn
 }
 #################### Setiing forwardes to google DNS in /etc/bind/named.conf.options for redundancy ####################
 forwarders_fn(){
-echo "${MENU}$q\nDo you whan to set forwarders to google DNS ( recomended! )? (y/n)${END}"
+echo "${MENU}q\nDo you whan to set forwarders to google DNS ( recomended! )? (y/n)${END}"
 read ver
 if [ $ver = y ];then
 sudo cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup
@@ -200,7 +202,7 @@ echo "${SUCCESS}All done!${END}"
 sleep 3
 controll=$(dig $Site | grep $Site)
 clear
-echo "${INFOS}plese verify your setup${END}"
+echo "${NUMBER}plese verify your setup${END}"
 echo $controll
 sleep 7
 clear
@@ -214,7 +216,7 @@ echo "${SUCCESS}Please type address to check${END}"
 read Sites
 controlls=$(dig $Sites | grep $Sites)
 clear
-echo "${INFOS}plese verify your setup${END}"
+echo "${NUMBER}plese verify your setup${END}"
 echo $controlls
 sleep 7
 clear
@@ -228,9 +230,9 @@ cd /etc/bind/
 seedb=$(ls db*)
 echo $seedb
 echo ""
-echo "${INFOS}type what zone you wish to remove (ex mysite.com without the db.)${END}"
+echo "${NUMBER}type what zone you wish to remove (ex mysite.com without the db.)${END}"
 read dbfile
-echo "${MENU}$q\nAre you sure you want to delete the zone $dbfile? (y/n)${END}"
+echo "${MENU}q\nAre you sure you want to delete the zone $dbfile? (y/n)${END}"
 read vyr
     if [ $vyr = y ];then
     sudo rm -rf db.$dbfile
@@ -258,7 +260,7 @@ show_menu(){
     read opt
     while [ opt != '' ]
     do
-    if [ $opt = "" ]; then
+    if [ $opt = "" ]; then 
             exit;
     else
         case $opt in
