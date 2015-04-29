@@ -122,9 +122,11 @@ echo "$warn\nYou need to install Bind9"
     sudo apt-get install bind9 -y
 	zones_fn
     else
-  echo "Bind is already installed..."
-  show_menu
+    show_menu
     fi
+else
+echo "Bind is already installed..."
+show_menu
 fi
 clear
 zones_fn
