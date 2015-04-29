@@ -26,15 +26,17 @@
 # ~~~~~~~~~~  Environment Setup ~~~~~~~~~~ #
 
 #################################### Install Bind9 if its not installed ####################################
+
 install_fn(){
 if [ ! -x /etc/bind ];then
 echo "$warn\nYou need to install Bind9"
   sleep 1
-  echo "${MENU}\nDo you want to do it now? (y/n)${END}"
+  echo "${MENU}\nDo you want to do it now? (y/n)"
 echo "1" > install.log
   read var
     if [ $var = y ];then
     sudo apt-get install bind9 -y
+	${END}
     clear
     nameservers_fn
     else
@@ -45,7 +47,9 @@ fi
 clear
 nameservers_fn
 }
+
 ########################### Checking /eth/network/interfaces for DNS-servers ################################
+
 nameservers_fn(){
 content=$( cat /etc/network/interfaces | grep dns-nameservers)
 if [ "$?" = 0 ]
@@ -64,12 +68,14 @@ clear
 interfaces_fn
 fi
 }
+
 ########################### Checking /eth/network/interfaces if DNS-servers are correct ################################
+
 dnsnames_fn(){
 content=$( cat /etc/network/interfaces | grep dns-nameservers)
 if [ "$?" = 0 ]
 then
-  echo "${MENU}\nplease check that = $content is correct!? (y/n)${END}"
+  echo "${MENU}\nplease check that ${END}${FGRED}$content${END}${MENU} is correct!? (y/n)${END}"
   read dns
     if [ $dns = y ];then
     clear
@@ -94,12 +100,12 @@ clear
  echo "${FGRED}You have not set an static IP address! DNS-server will not be reacheble if this machine changes IP all the time.${END}"
  sleep 6
 fi
-echo "${MENU}\nDo you whan to set DNS-servername to localhost in the network interfaces ( recomended! )? (y/n)${END}"
+echo "${MENU}\nDo you whant to set DNS-servername to localhost in the network interfaces ( recomended! )? (y/n)${END}"
 read vir
 if [ $vir = y ];then
 sudo echo "dns-nameservers 127.0.0.1" >> /etc/network/interfaces
 echo 
-echo "${NUMBER} Restarting network card ${END}"
+echo "${NUMBER}Restarting network card${END}"
 sudo /etc/init.d/networking restart
 sleep 2
 clear
@@ -134,7 +140,9 @@ fi
 clear
 zones_fn
 }
+
 #################### Setiing forwardes to google DNS in /etc/bind/named.conf.options for redundancy ####################
+
 forwarders_fn(){
 echo "${MENU}\nDo you whan to set forwarders to google DNS ( recomended! )? (y/n)${END}"
 read ver
@@ -170,7 +178,9 @@ fi
 clear
 zones_fn
 }
+
 ############################################ Adding new zones ############################################
+
 zones_fn(){
 sudo cp /etc/bind/named.conf.local /etc/bind/named.conf.local.backup
 echo "${MENU}Please type in you dns name ( like... iamcool.com )${END}"
@@ -241,7 +251,9 @@ cat /etc/bind/named.conf.local| sed "/$dbfile/,+1 d" > /etc/bind/named.conf.loca
 sudo cp /etc/bind/named.conf.local.new /etc/bind/named.conf.local
 show_menu 
 }
+
 ############################################ Menu ############################################
+
 clear
 show_menu(){
     echo "${INTRO_TEXT}      Nameserver is  DNS-server setup script    ${INTRO_TEXT}"
