@@ -260,7 +260,7 @@ show_menu(){
         ;;
 
         2) clear;
-            install_fn;
+            installbind_fn;
             ;;
 
         3) clear;
