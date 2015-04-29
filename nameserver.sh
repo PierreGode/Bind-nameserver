@@ -125,7 +125,9 @@ echo "$warn\nYou need to install Bind9"
     show_menu
     fi
 else
-echo "Bind is already installed..."
+echo "${WARNING}$Bind is already installed...${END}"
+sleep 3
+clear
 show_menu
 fi
 clear
