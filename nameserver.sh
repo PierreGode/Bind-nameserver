@@ -123,7 +123,7 @@ echo "$warn\nYou need to install Bind9"
 	zones_fn
     else
   echo "Bind is already installed..."
-  exit;
+  show_menu
     fi
 fi
 clear
