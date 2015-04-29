@@ -2,7 +2,7 @@
 
 #####################################################################################################################
 #                                                                                                                   #
-#                     This script is written by Pierre aka Linoge, admin of Webbh4tt                                #
+#                             This script is written by Pierre aka Linoge                                           #
 #  This program is open source; you can redistribute it and/or modify it under the terms of the GNU General Public  #
 #                 The author bears no responsibility  for malicious or illegal use.                                 #
 #                                                                                                                   #
@@ -25,12 +25,13 @@
     END=`echo "\033[0m"`
 # ~~~~~~~~~~  Environment Setup ~~~~~~~~~~ #
 
-########################### Install Bind9 if its not installed ################################
+#################################### Install Bind9 if its not installed ####################################
 install_fn(){
 if [ ! -x /etc/bind ];then
 echo "$warn\nYou need to install Bind9"
   sleep 1
-  echo "$q\nDo you want to do it now? (y/n)"
+  echo "${MENU}$q\nDo you want to do it now? (y/n)"
+echo "1" > install.log
   read var
     if [ $var = y ];then
     sudo apt-get install bind9 -y
@@ -38,7 +39,7 @@ echo "$warn\nYou need to install Bind9"
     nameservers_fn
     else
     clear
-    nameservers_fn
+    exit;
     fi
 fi
 clear
@@ -49,44 +50,58 @@ nameservers_fn(){
 content=$( cat /etc/network/interfaces | grep dns-nameservers)
 if [ "$?" = 0 ]
 then
-echo "$q\nyou seem to already have an configured DNS-server.. do you wish to proceed adding zones? (y/n)"
+echo "${MENU}$q\nyou seem to already have an configured DNS-server.. do you wish to proceed adding zones? (y/n)${END}"
   read dns
     if [ $dns = y ];then
     clear
     zones_fn
     else
     clear
-    show_menu
+    interfaces_fn
     fi
 else
 clear
-show_menu
-fi
-clear
 interfaces_fn
+fi
 }
 ########################### Checking /eth/network/interfaces if DNS-servers are correct ################################
 dnsnames_fn(){
 content=$( cat /etc/network/interfaces | grep dns-nameservers)
 if [ "$?" = 0 ]
 then
-  echo "$q\nplease check that = $content is correct!? (y/n)"
+  echo "${MENU}$q\nplease check that = $content is correct!? (y/n)${END}"
   read dns
     if [ $dns = y ];then
     clear
     zones_fn
 else
 clear
-interfaces
+interfaces_fn
 fi
     fi
 }
-########################### Adding DNS-servers to /eth/network/interfaces ################################
+
+################################ Adding DNS-servers to /eth/network/interfaces #########################################
+
 interfaces_fn(){
+echo "${INFOS}$Controlling your setup.....${END}"
+netwok=$( cat /etc/network/interfaces | address)
+if [ "$?" = 0 ]
+then 
+echo""
+else
+clear
+ echo "${WARNING}$You have not set an static IP address! DNS-server will not be reacheble if this machine changes IP all the time.${END}"
+ sleep 6
+fi
 echo "${MENU}$q\nDo you whan to set DNS-servername to localhost in the network interfaces ( recomended! )? (y/n)${END}"
 read vir
 if [ $vir = y ];then
 sudo echo "dns-nameservers 127.0.0.1" >> /etc/network/interfaces
+echo 
+echo "${INFOS}$ Restarting network card ${END}"
+sudo /etc/init.d/networking restart
+sleep 2
 clear
 forwarders_fn
 else
@@ -99,7 +114,7 @@ installbind_fn(){
 if [ ! -x /etc/bind ];then
 echo "$warn\nYou need to install Bind9"
   sleep 1
-  echo "$q\nDo you want to do it now? (y/n)"
+  echo "${MENU}$q\nDo you want to do it now? (y/n)${END}"
   read var
     if [ $var = y ];then
     sudo apt-get install bind9 -y
@@ -110,7 +125,7 @@ fi
 clear
 zones_fn
 }
-########################### Setiing forwardes to google DNS in /etc/bind/named.conf.options for redundancy ################################
+#################### Setiing forwardes to google DNS in /etc/bind/named.conf.options for redundancy ####################
 forwarders_fn(){
 echo "${MENU}$q\nDo you whan to set forwarders to google DNS ( recomended! )? (y/n)${END}"
 read ver
@@ -146,7 +161,7 @@ fi
 clear
 zones_fn
 }
-########################### Adding new zones ################################
+############################################ Adding new zones ############################################
 zones_fn(){
 sudo cp /etc/bind/named.conf.local /etc/bind/named.conf.local.backup
 echo "${MENU}Please type in you dns name ( like... iamcool.com )${END}"
@@ -178,21 +193,35 @@ echo "${SUCCESS}All done!${END}"
 sleep 3
 controll=$(dig $Site | grep $Site)
 clear
-echo "plese verify your setup"
+echo "${INFOS}plese verify your setup${END}"
 echo $controll
 sleep 7
 clear
 show_menu
 }
 
+verify_fn(){
+echo "${SUCCESS}Please type address to check${END}"
+read Sites
+controlls=$(dig $Sites | grep $Sites)
+clear
+echo "${INFOS}plese verify your setup${END}"
+echo $controlls
+sleep 7
+clear
+show_menu
+}
+
+############################################ Deleting zones ############################################
+
 delete_fn(){
 cd /etc/bind/
 seedb=$(ls db*)
 echo $seedb
 echo ""
-echo "type what zone you wish to remove (ex mysite.com without the db.)"
+echo "${INFOS}type what zone you wish to remove (ex mysite.com without the db.)${END}"
 read dbfile
-echo "$q\nAre you sure you want to delete the zone $dbfile? (y/n)"
+echo "${MENU}$q\nAre you sure you want to delete the zone $dbfile? (y/n)${END}"
 read vyr
     if [ $vyr = y ];then
     sudo rm -rf db.$dbfile
@@ -201,11 +230,11 @@ cat /etc/bind/named.conf.local| sed "/$dbfile/,+1 d" > /etc/bind/named.conf.loca
 sudo cp /etc/bind/named.conf.local.new /etc/bind/named.conf.local
 show_menu 
 }
-########################### Menu ################################
+############################################ Menu ############################################
 clear
 show_menu(){
-    echo "${INTRO_TEXT} Nameserver is  DNS-server setup script    ${INTRO_TEXT}"
-    echo "${INTRO_TEXT}Created for Ubuntulinux by Pierre from Webbhatt  ${INTRO_TEXT}"
+    echo "${INTRO_TEXT}      Nameserver is  DNS-server setup script    ${INTRO_TEXT}"
+    echo "${INTRO_TEXT}     Created for Ubuntulinux by Pierre Goude    ${INTRO_TEXT}"
     echo "${NORMAL}                                                    ${NORMAL}"
     echo "${MENU}*****************NameserverBy*Pierre**************${NORMAL}"
     echo "${NORMAL}                                                    ${NORMAL}"
@@ -213,6 +242,7 @@ show_menu(){
     echo "${MENU}*${NUMBER} 2)${MENU} Install bind9 and add zones ${NORMAL}"
     echo "${MENU}*${NUMBER} 3)${MENU} Add new zones  ${NORMAL}"
     echo "${MENU}*${NUMBER} 4)${MENU} Delete zones ${NORMAL}"
+	echo "${MENU}*${NUMBER} 5)${MENU} Verify zones ${NORMAL}"
     echo "${NORMAL}                                                    ${NORMAL}"
     echo "${MENU}*****************NameserverBy*Pierre**************${NORMAL}"
     echo "${ENTER_LINE}Please enter a menu option and enter or ${RED_TEXT}enter to exit. ${NORMAL}"
@@ -237,6 +267,9 @@ show_menu(){
 
         4) clear;
             delete_fn;
+            ;;
+		5) clear;
+            verify_fn;
             ;;
 
         x)exit;
