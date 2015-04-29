@@ -118,8 +118,10 @@ echo "$warn\nYou need to install Bind9"
   read var
     if [ $var = y ];then
     sudo apt-get install bind9 -y
+	zones_fn
     else
-  echo ""
+  echo "Bind is already installed..."
+  exit;
     fi
 fi
 clear
