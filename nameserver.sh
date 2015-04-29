@@ -252,7 +252,7 @@ $lista"
 echo ""
 echo "${LIGHTCONFIRM}type what zone you wish to remove (ex mysite.com)${END}"
 read dbfile
-echo "${MENU}\nAre you sure you want to delete the zone $dbfile? (y/n)${END}"
+echo "${MENU}\nAre you sure you want to delete the zone${END}${LIGHTCONFIRM} $dbfile? (y/n)${END}"
 read vyr
     if [ $vyr = y ];then
     sudo rm -rf db.$dbfile
