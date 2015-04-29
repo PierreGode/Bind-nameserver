@@ -110,13 +110,15 @@ show_menu
 fi
 }
 
+#################################### Install Bind9 if its not installed - fast setup ####################################
+
 installbind_fn(){
 if [ ! -x /etc/bind ];then
 echo "$warn\nYou need to install Bind9"
   sleep 1
   echo "${MENU}$q\nDo you want to do it now? (y/n)${END}"
-  read var
-    if [ $var = y ];then
+  read vaar
+    if [ $vaar = y ];then
     sudo apt-get install bind9 -y
 	zones_fn
     else
@@ -201,6 +203,8 @@ sleep 7
 clear
 show_menu
 }
+
+############################################ Verify zones ############################################
 
 verify_fn(){
 echo "${SUCCESS}Please type address to check${END}"
