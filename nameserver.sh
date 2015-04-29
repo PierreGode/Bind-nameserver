@@ -98,7 +98,6 @@ echo "${MENU}$q\nDo you whan to set DNS-servername to localhost in the network i
 read vir
 if [ $vir = y ];then
 sudo echo "dns-nameservers 127.0.0.1" >> /etc/network/interfaces
-echo 
 echo "${INFOS}$ Restarting network card ${END}"
 sudo /etc/init.d/networking restart
 sleep 2
@@ -125,8 +124,7 @@ echo "$warn\nYou need to install Bind9"
     show_menu
     fi
 else
-echo "${WARNING}$Bind9 is already installed on this server.. if you made an uninstall${END}"
-echo "${WARNING}$of bind9 then make sure to do an apt-get purge bind9                ${END}"
+echo "Bind9 is already installed on this machine..."
 sleep 3
 clear
 show_menu
@@ -260,7 +258,7 @@ show_menu(){
     read opt
     while [ opt != '' ]
     do
-    if [[ $opt = "" ]]; then 
+    if [ $opt = "" ]; then
             exit;
     else
         case $opt in
