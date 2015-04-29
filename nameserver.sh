@@ -125,7 +125,8 @@ echo "$warn\nYou need to install Bind9"
     show_menu
     fi
 else
-echo "${WARNING}$Bind is already installed...${END}"
+echo "${WARNING}$Bind9 is already installed on this server.. if you made an uninstall${END}"
+echo "${WARNING}$of bind9 then make sure to do an apt-get purge bind9                ${END}"
 sleep 3
 clear
 show_menu
