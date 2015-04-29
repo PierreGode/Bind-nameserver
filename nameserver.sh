@@ -10,18 +10,21 @@
 #####################################################################################################################
 
 # ~~~~~~~~~~  Environment Setup ~~~~~~~~~~ #
-    NORMAL=`echo "\033[m"`
-    MENU=`echo "\033[36m"` #Blue
-    NUMBER=`echo "\033[33m"` #yellow
-    FGRED=`echo "\033[41m"`
-    RED_TEXT=`echo "\033[31m"` #Red
-    ENTER_LINE=`echo "\033[33m"`
-    INTRO_TEXT=`echo "\033[32m"` #green and white text
-    INFO=`echo "\033[103;30m"` #yellow bg
-    SUCCESS=`echo "\033[102;30m"` #green bg
-    MENU1=`echo "\033[101;30m"` #red bg
-    WARP=`echo "\033[106;30m"` #lightblue bg
-    BLACK=`echo "\033[109;30m"` #SPACE bg
+    NORMAL=`echo "\033[m"`           #White text
+    MENU=`echo "\033[36m"`           #Cyan text
+    NUMBER=`echo "\033[33m"`         #Dark Yellow text
+    CONFIRM=`echo "\033[32m"`        #Green text
+	LIGHTCONFIRM=`echo "\033[1;32m"` #Light Green text
+    RED_TEXT=`echo "\033[31m"`       #Red text
+    ENTER_LINE=`echo "\033[33m"`     #Blue text
+    JILL_COLOR=`echo "\033[35m"`     #Purple text
+    INTRO_TEXT=`echo "\033[102;41m"` #green bg and white text
+    INFO=`echo "\033[103;30m"`       #yellow bg
+    SUCCESS=`echo "\033[102;30m"`    #green bg
+    FGRED=`echo "\033[41m"`          #Red Bg white text
+    MENU1=`echo "\033[101;30m"`      #light red bg
+    WARP=`echo "\033[106;30m"`       #lightblue bg
+    BLACK=`echo "\033[109;30m"`      #Black bg
     END=`echo "\033[0m"`
 # ~~~~~~~~~~  Environment Setup ~~~~~~~~~~ #
 
@@ -65,7 +68,7 @@ echo "${MENU}\nyou seem to already have an configured DNS-server.. do you wish t
     fi
 else
 clear
-interfaces_fn
+show_menu
 fi
 }
 
@@ -104,7 +107,6 @@ echo "${MENU}\nDo you whant to set DNS-servername to localhost in the network in
 read vir
 if [ $vir = y ];then
 sudo echo "dns-nameservers 127.0.0.1" >> /etc/network/interfaces
-echo 
 echo "${NUMBER}Restarting network card${END}"
 sudo /etc/init.d/networking restart
 sleep 2
@@ -112,7 +114,7 @@ clear
 forwarders_fn
 else
 clear
-show_menu
+forwarders_fn
 fi
 }
 
@@ -122,10 +124,12 @@ installbind_fn(){
 if [ ! -x /etc/bind ];then
 echo "$warn\nYou need to install Bind9"
   sleep 1
-  echo "${MENU}\nDo you want to do it now? (y/n)${END}"
+  echo "${MENU}\nDo you want to do it now? (y/n)"
   read vaar
     if [ $vaar = y ];then
     sudo apt-get install bind9 -y
+	${END}
+	clear
 	zones_fn
     else
     show_menu
@@ -183,13 +187,13 @@ zones_fn
 
 zones_fn(){
 sudo cp /etc/bind/named.conf.local /etc/bind/named.conf.local.backup
-echo "${MENU}Please type in you dns name ( like... iamcool.com )${END}"
+echo "${MENU}Please type in you dns name ( like... mysite.com )${END}"
 read Site
 echo "zone \"$Site\" {
         type master;
         file \"/etc/bind/db.$Site\";
 };" >> /etc/bind/named.conf.local
-echo "${MENU}Please type in the ip adress for your dns name ( like... 192.168.1.3  = iamcool.com )${END}"
+echo "${MENU}Please type in the ip adress for your dns name ( like... 192.168.1.3  = mysite.com )${END}"
 read Ip
 sudo cp /etc/bind/db.empty /etc/bind/db.$Site
 sudo echo "; BIND reverse data file for empty rfc1918 zone
@@ -212,7 +216,7 @@ echo "${SUCCESS}All done!${END}"
 sleep 3
 controll=$(dig $Site | grep $Site)
 clear
-echo "${NUMBER}plese verify your setup${END}"
+echo "${LIGHTCONFIRM}plese verify your setup${END}"
 echo $controll
 sleep 7
 clear
@@ -222,6 +226,10 @@ show_menu
 ############################################ Verify zones ############################################
 
 verify_fn(){
+lista=$(cat /etc/bind/named.conf.local | grep zone | cut -d '"' -f2 | cut -d '/' -f1)
+echo "generating list of zones in conf file...
+$lista"
+echo ""
 echo "${SUCCESS}Please type address to check${END}"
 read Sites
 controlls=$(dig $Sites | grep $Sites)
@@ -233,14 +241,16 @@ clear
 show_menu
 }
 
-############################################ Deleting zones ############################################
+############################################ Deleting zones ###########################################
 
 delete_fn(){
 cd /etc/bind/
 seedb=$(ls db*)
-echo $seedb
+lista=$(cat /etc/bind/named.conf.local | grep zone | cut -d '"' -f2 | cut -d '/' -f1)
+echo "generating list of zones in conf file...
+$lista"
 echo ""
-echo "${NUMBER}type what zone you wish to remove (ex mysite.com without the db.)${END}"
+echo "${LIGHTCONFIRM}type what zone you wish to remove (ex mysite.com)${END}"
 read dbfile
 echo "${MENU}\nAre you sure you want to delete the zone $dbfile? (y/n)${END}"
 read vyr
@@ -256,10 +266,10 @@ show_menu
 
 clear
 show_menu(){
-    echo "${INTRO_TEXT}      Nameserver is  DNS-server setup script    ${INTRO_TEXT}"
-    echo "${INTRO_TEXT}     Created for Ubuntulinux by Pierre Goude    ${INTRO_TEXT}"
-    echo "${NORMAL}                                                    ${NORMAL}"
-    echo "${MENU}*****************NameserverBy*Pierre**************${NORMAL}"
+    echo "${ENTER_LINE}      Nameserver is  DNS-server setup script    ${END}"
+    echo "${ENTER_LINE}     Created for Ubuntulinux by Pierre Goude    ${END}"
+    echo "${NORMAL}                                                    ${END}"
+    echo "${MENU}*****************Nameserver By Pierre**************${NORMAL}"
     echo "${NORMAL}                                                    ${NORMAL}"
     echo "${MENU}*${NUMBER} 1)${MENU} Install DNS nameserver from scrach on a new server ${NORMAL}"
     echo "${MENU}*${NUMBER} 2)${MENU} Install bind9 and add zones ${NORMAL}"
@@ -267,10 +277,10 @@ show_menu(){
     echo "${MENU}*${NUMBER} 4)${MENU} Delete zones ${NORMAL}"
 	echo "${MENU}*${NUMBER} 5)${MENU} Verify zones ${NORMAL}"
     echo "${NORMAL}                                                    ${NORMAL}"
-    echo "${MENU}*****************NameserverBy*Pierre**************${NORMAL}"
+    echo "${MENU}*****************Nameserver By Pierre**************${NORMAL}"
     echo "${ENTER_LINE}Please enter a menu option and enter or ${RED_TEXT}enter to exit. ${NORMAL}"
     read opt
-    while [ opt != '' ]
+    while [ $opt != "" ]
     do
     if [ $opt = "" ]; then 
             exit;
