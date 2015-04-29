@@ -30,7 +30,7 @@ install_fn(){
 if [ ! -x /etc/bind ];then
 echo "$warn\nYou need to install Bind9"
   sleep 1
-  echo "${MENU}q\nDo you want to do it now? (y/n)${END}"
+  echo "${MENU}\nDo you want to do it now? (y/n)${END}"
 echo "1" > install.log
   read var
     if [ $var = y ];then
@@ -50,14 +50,14 @@ nameservers_fn(){
 content=$( cat /etc/network/interfaces | grep dns-nameservers)
 if [ "$?" = 0 ]
 then
-echo "${MENU}q\nyou seem to already have an configured DNS-server.. do you wish to proceed adding zones? (y/n)${END}"
+echo "${MENU}\nyou seem to already have an configured DNS-server.. do you wish to proceed adding zones? (y/n)${END}"
   read dns
     if [ $dns = y ];then
     clear
-    zones_fn
+    dnsnames_fn
     else
     clear
-    interfaces_fn
+    show_menu
     fi
 else
 clear
@@ -69,7 +69,7 @@ dnsnames_fn(){
 content=$( cat /etc/network/interfaces | grep dns-nameservers)
 if [ "$?" = 0 ]
 then
-  echo "${MENU}q\nplease check that = $content is correct!? (y/n)${END}"
+  echo "${MENU}\nplease check that = $content is correct!? (y/n)${END}"
   read dns
     if [ $dns = y ];then
     clear
@@ -94,7 +94,7 @@ clear
  echo "${FGRED}You have not set an static IP address! DNS-server will not be reacheble if this machine changes IP all the time.${END}"
  sleep 6
 fi
-echo "${MENU}q\nDo you whan to set DNS-servername to localhost in the network interfaces ( recomended! )? (y/n)${END}"
+echo "${MENU}\nDo you whan to set DNS-servername to localhost in the network interfaces ( recomended! )? (y/n)${END}"
 read vir
 if [ $vir = y ];then
 sudo echo "dns-nameservers 127.0.0.1" >> /etc/network/interfaces
@@ -116,7 +116,7 @@ installbind_fn(){
 if [ ! -x /etc/bind ];then
 echo "$warn\nYou need to install Bind9"
   sleep 1
-  echo "${MENU}q\nDo you want to do it now? (y/n)${END}"
+  echo "${MENU}\nDo you want to do it now? (y/n)${END}"
   read vaar
     if [ $vaar = y ];then
     sudo apt-get install bind9 -y
@@ -136,7 +136,7 @@ zones_fn
 }
 #################### Setiing forwardes to google DNS in /etc/bind/named.conf.options for redundancy ####################
 forwarders_fn(){
-echo "${MENU}q\nDo you whan to set forwarders to google DNS ( recomended! )? (y/n)${END}"
+echo "${MENU}\nDo you whan to set forwarders to google DNS ( recomended! )? (y/n)${END}"
 read ver
 if [ $ver = y ];then
 sudo cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup
@@ -232,7 +232,7 @@ echo $seedb
 echo ""
 echo "${NUMBER}type what zone you wish to remove (ex mysite.com without the db.)${END}"
 read dbfile
-echo "${MENU}q\nAre you sure you want to delete the zone $dbfile? (y/n)${END}"
+echo "${MENU}\nAre you sure you want to delete the zone $dbfile? (y/n)${END}"
 read vyr
     if [ $vyr = y ];then
     sudo rm -rf db.$dbfile
