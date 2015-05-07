@@ -68,7 +68,7 @@ echo "${MENU}\nyou seem to already have an configured DNS-server.. do you wish t
     fi
 else
 clear
-show_menu
+dnsnames_fn
 fi
 }
 
@@ -82,27 +82,67 @@ then
   read dns
     if [ $dns = y ];then
     clear
-    zones_fn
-else
-clear
-interfaces_fn
-fi
+    interfaces_fn
+    else
+    clear
+    interfaces_fn
     fi
+else 
+setdns_fn
+fi
 }
 
-################################ Adding DNS-servers to /eth/network/interfaces #########################################
+################################ Set ip to /eth/network/interfaces #########################################
 
 interfaces_fn(){
-echo "${NUMBER}Controlling your setup.....${END}"
+sleep 3
 netwok=$( cat /etc/network/interfaces | address)
 if [ "$?" = 0 ]
 then 
-echo""
+forwarders_fn
 else
 clear
  echo "${FGRED}You have not set an static IP address! DNS-server will not be reacheble if this machine changes IP all the time.${END}"
  sleep 6
 fi
+   echo "${MENU}\nDo you want yo set an static ip? now? (y/n)${END}"
+   read vip
+	if [ $vip = y ];then
+	echo "${MENU}\nAre you really sure you know what you are doing? (y/n)${END}"
+		read vsur
+		if [ $vsur = y ];then
+		seeip=$(ifconfig | grep "inet addr" | grep Bcast | cut -d ':' -f2 | cut -d 'B' -f1)
+		echo "${MENU}Your current IP is ${END}${LIGHTCONFIRM}$seeip${END}${MENU} make sure to set you IP in same network${END}"
+		contents=$( cat /etc/network/interfaces | grep dns-nameservers)
+		echo $contents > temp.log
+		echo "${MENU}Type in an ip-adress that is free in your network${END}"
+		read myip
+		echo "${MENU}Type in an your netmask${END}"
+		read netmask
+		echo "${MENU}Type in an your gateway${END}"
+		read gatewaay
+		sudo echo "auto lo eth0
+		iface lo inet loopback
+		iface eth0 inet static" > /etc/network/interfaces
+		sudo echo "$myip" >> /etc/network/interfaces
+		sudo echo "$netmask" >> /etc/network/interfaces
+		sudo echo "$gatewaay" >> /etc/network/interfaces
+		cat temp.log | grep dns-nameservers >> /etc/network/interfaces
+		echo "${NUMBER}Restarting network card${END}"
+		sudo /etc/init.d/networking restart
+		clear
+		forwarders_fn
+		else
+		show_menu
+		fi
+   else
+   forwarders_fn
+   fi
+}
+
+################################ Adding DNS-servers to /eth/network/interfaces #########################################
+
+setdns_fn(){ 
 echo "${MENU}\nDo you whant to set DNS-servername to localhost in the network interfaces ( recomended! )? (y/n)${END}"
 read vir
 if [ $vir = y ];then
@@ -111,10 +151,10 @@ echo "${NUMBER}Restarting network card${END}"
 sudo /etc/init.d/networking restart
 sleep 2
 clear
-forwarders_fn
+interfaces_fn
 else
 clear
-forwarders_fn
+interfaces_fn
 fi
 }
 
@@ -145,7 +185,7 @@ clear
 zones_fn
 }
 
-#################### Setiing forwardes to google DNS in /etc/bind/named.conf.options for redundancy ####################
+#################### Setting forwardes to google DNS in /etc/bind/named.conf.options for redundancy ####################
 
 forwarders_fn(){
 echo "${MENU}\nDo you whan to set forwarders to google DNS ( recomended! )? (y/n)${END}"
