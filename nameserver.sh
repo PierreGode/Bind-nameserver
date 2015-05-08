@@ -28,6 +28,17 @@
     END=`echo "\033[0m"`
 # ~~~~~~~~~~  Environment Setup ~~~~~~~~~~ #
 
+
+#############################################################
+#                                                           #
+#                Known bugs:   none                         #
+#         Report bugs to pierre@webbhatt.com                #
+#                                                           #
+#############################################################
+
+
+
+
 #################################### Install Bind9 if its not installed ####################################
 
 install_fn(){
@@ -115,6 +126,7 @@ fi
 		echo "${MENU}Your current IP is ${END}${LIGHTCONFIRM}$seeip${END}${MENU} make sure to set you IP in same network${END}"
 		contents=$( cat /etc/network/interfaces | grep dns-nameservers)
 		echo $contents > temp.log
+		sudo cp /etc/network/interfaces /etc/network/interfaces-backup
 		echo "${MENU}Type in an ip-adress that is free in your network${END}"
 		read myip
 		echo "${MENU}Type in an your netmask${END}"
