@@ -286,7 +286,7 @@ echo "${SUCCESS}Please type address to check${END}"
 read Sites
 controlls=$(dig $Sites | grep $Sites)
 clear
-echo "${NUMBER}plese verify your setup${END}"
+echo "${NUMBER}please verify your setup${END}"
 echo $controlls
 sleep 7
 clear
