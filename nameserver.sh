@@ -1,5 +1,3 @@
-#!/bin/bash
-
 #####################################################################################################################
 #                                                                                                                   #
 #                             This script is written by Pierre aka Linoge                                           #
@@ -14,7 +12,7 @@
     MENU=`echo "\033[36m"`           #Cyan text
     NUMBER=`echo "\033[33m"`         #Dark Yellow text
     CONFIRM=`echo "\033[32m"`        #Green text
-	LIGHTCONFIRM=`echo "\033[1;32m"` #Light Green text
+        LIGHTCONFIRM=`echo "\033[1;32m"` #Light Green text
     RED_TEXT=`echo "\033[31m"`       #Red text
     ENTER_LINE=`echo "\033[33m"`     #Blue text
     JILL_COLOR=`echo "\033[35m"`     #Purple text
@@ -28,17 +26,6 @@
     END=`echo "\033[0m"`
 # ~~~~~~~~~~  Environment Setup ~~~~~~~~~~ #
 
-
-#############################################################
-#                                                           #
-#                Known bugs:   none                         #
-#         Report bugs to pierre@webbhatt.com                #
-#                                                           #
-#############################################################
-
-
-
-
 #################################### Install Bind9 if its not installed ####################################
 
 install_fn(){
@@ -50,7 +37,7 @@ echo "1" > install.log
   read var
     if [ $var = y ];then
     sudo apt-get install bind9 -y
-	${END}
+        ${END}
     clear
     nameservers_fn
     else
@@ -98,7 +85,7 @@ then
     clear
     interfaces_fn
     fi
-else 
+else
 setdns_fn
 fi
 }
@@ -109,7 +96,7 @@ interfaces_fn(){
 sleep 3
 netwok=$( cat /etc/network/interfaces | address)
 if [ "$?" = 0 ]
-then 
+then
 forwarders_fn
 else
 clear
@@ -118,35 +105,34 @@ clear
 fi
    echo "${MENU}\nDo you want yo set an static ip? now? (y/n)${END}"
    read vip
-	if [ $vip = y ];then
-	echo "${MENU}\nAre you really sure you know what you are doing? (y/n)${END}"
-		read vsur
-		if [ $vsur = y ];then
-		seeip=$(ifconfig | grep "inet addr" | grep Bcast | cut -d ':' -f2 | cut -d 'B' -f1)
-		echo "${MENU}Your current IP is ${END}${LIGHTCONFIRM}$seeip${END}${MENU} make sure to set you IP in same network${END}"
-		contents=$( cat /etc/network/interfaces | grep dns-nameservers)
-		echo $contents > temp.log
-		sudo cp /etc/network/interfaces /etc/network/interfaces-backup
-		echo "${MENU}Type in an ip-adress that is free in your network${END}"
-		read myip
-		echo "${MENU}Type in an your netmask${END}"
-		read netmask
-		echo "${MENU}Type in an your gateway${END}"
-		read gatewaay
-		sudo echo "auto lo eth0
-		iface lo inet loopback
-		iface eth0 inet static" > /etc/network/interfaces
-		sudo echo "$myip" >> /etc/network/interfaces
-		sudo echo "$netmask" >> /etc/network/interfaces
-		sudo echo "$gatewaay" >> /etc/network/interfaces
-		cat temp.log | grep dns-nameservers >> /etc/network/interfaces
-		echo "${NUMBER}Restarting network card${END}"
-		sudo /etc/init.d/networking restart
-		clear
-		forwarders_fn
-		else
-		show_menu
-		fi
+        if [ $vip = y ];then
+        echo "${MENU}\nAre you really sure you know what you are doing? (y/n)${END}"
+                read vsur
+                if [ $vsur = y ];then
+                seeip=$(ifconfig | grep "inet addr" | grep Bcast | cut -d ':' -f2 | cut -d 'B' -f1)
+                echo "${MENU}Your current IP is ${END}${LIGHTCONFIRM}$seeip${END}${MENU} make sure to set you IP in same network${END}"
+                contents=$( cat /etc/network/interfaces | grep dns-nameservers)
+                echo $contents > temp.log
+                echo "${MENU}Type in an ip-adress that is free in your network${END}"
+                read myip
+                echo "${MENU}Type in an your netmask${END}"
+                read netmask
+                echo "${MENU}Type in an your gateway${END}"
+                read gatewaay
+                sudo echo "auto lo eth0
+                iface lo inet loopback
+                iface eth0 inet static" > /etc/network/interfaces
+                sudo echo "$myip" >> /etc/network/interfaces
+                sudo echo "$netmask" >> /etc/network/interfaces
+                sudo echo "$gatewaay" >> /etc/network/interfaces
+                cat temp.log | grep dns-nameservers >> /etc/network/interfaces
+                echo "${NUMBER}Restarting network card${END}"
+                sudo /etc/init.d/networking restart
+                clear
+                forwarders_fn
+                else
+                show_menu
+                fi
    else
    forwarders_fn
    fi
@@ -154,7 +140,7 @@ fi
 
 ################################ Adding DNS-servers to /eth/network/interfaces #########################################
 
-setdns_fn(){ 
+setdns_fn(){
 echo "${MENU}\nDo you whant to set DNS-servername to localhost in the network interfaces ( recomended! )? (y/n)${END}"
 read vir
 if [ $vir = y ];then
@@ -180,9 +166,9 @@ echo "$warn\nYou need to install Bind9"
   read vaar
     if [ $vaar = y ];then
     sudo apt-get install bind9 -y
-	${END}
-	clear
-	zones_fn
+        ${END}
+        clear
+        zones_fn
     else
     show_menu
     fi
@@ -280,15 +266,15 @@ show_menu
 verify_fn(){
 lista=$(cat /etc/bind/named.conf.local | grep zone | cut -d '"' -f2 | cut -d '/' -f1)
 echo "generating list of zones in conf file...
-$lista"
-echo ""
-echo "${SUCCESS}Please type address to check${END}"
+$lista
+
+${NUMBER}Please type the zone you wish to check${END}"
 read Sites
 controlls=$(dig $Sites | grep $Sites)
 clear
-echo "${NUMBER}please verify your setup${END}"
+echo "${NUMBER}plese verify your setup${END}"
 echo $controlls
-sleep 7
+sleep 10
 clear
 show_menu
 }
@@ -311,7 +297,7 @@ read vyr
     fi
 cat /etc/bind/named.conf.local| sed "/$dbfile/,+1 d" > /etc/bind/named.conf.local.new
 sudo cp /etc/bind/named.conf.local.new /etc/bind/named.conf.local
-show_menu 
+show_menu
 }
 
 ############################################ Menu ############################################
@@ -327,14 +313,14 @@ show_menu(){
     echo "${MENU}*${NUMBER} 2)${MENU} Install bind9 and add zones ${NORMAL}"
     echo "${MENU}*${NUMBER} 3)${MENU} Add new zones  ${NORMAL}"
     echo "${MENU}*${NUMBER} 4)${MENU} Delete zones ${NORMAL}"
-	echo "${MENU}*${NUMBER} 5)${MENU} Verify zones ${NORMAL}"
+        echo "${MENU}*${NUMBER} 5)${MENU} Verify zones ${NORMAL}"
     echo "${NORMAL}                                                    ${NORMAL}"
     echo "${MENU}*****************Nameserver By Pierre**************${NORMAL}"
     echo "${ENTER_LINE}Please enter a menu option and enter or ${RED_TEXT}enter to exit. ${NORMAL}"
     read opt
     while [ $opt != "" ]
     do
-    if [ $opt = "" ]; then 
+    if [ $opt = "" ]; then
             exit;
     else
         case $opt in
@@ -353,7 +339,7 @@ show_menu(){
         4) clear;
             delete_fn;
             ;;
-		5) clear;
+                5) clear;
             verify_fn;
             ;;
 
