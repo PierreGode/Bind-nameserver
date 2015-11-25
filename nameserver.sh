@@ -299,7 +299,25 @@ cat /etc/bind/named.conf.local| sed "/$dbfile/,+1 d" > /etc/bind/named.conf.loca
 sudo cp /etc/bind/named.conf.local.new /etc/bind/named.conf.local
 show_menu
 }
-
+############################################ Fix DNS #########################################
+fixdns_fn(){
+clear
+echo "Restarting Network"
+sudo /etc/init.d/networking restart
+echo "Restarting Nameserver"
+sudo service bind9 restart
+clear
+echo if Bind9 is not running please contact administrator
+echo ""
+service bind9 status
+sleep 7
+echo ""
+echo "please verify that ip address below is 10.237.245.223"
+ifconfig | grep "inet addr:" | cut -d ':' -f2 | cut -d 'M' -f3 | cut -d 'B' -f1
+sleep 10
+clear
+show_menu
+}
 ############################################ Menu ############################################
 
 clear
@@ -313,7 +331,8 @@ show_menu(){
     echo "${MENU}*${NUMBER} 2)${MENU} Install bind9 and add zones ${NORMAL}"
     echo "${MENU}*${NUMBER} 3)${MENU} Add new zones  ${NORMAL}"
     echo "${MENU}*${NUMBER} 4)${MENU} Delete zones ${NORMAL}"
-        echo "${MENU}*${NUMBER} 5)${MENU} Verify zones ${NORMAL}"
+	echo "${MENU}*${NUMBER} 5)${MENU} Verify zones ${NORMAL}"
+	echo "${MENU}*${NUMBER} 6)${MENU} Fix DNS  ${NORMAL}"
     echo "${NORMAL}                                                    ${NORMAL}"
     echo "${MENU}*****************Nameserver By Pierre**************${NORMAL}"
     echo "${ENTER_LINE}Please enter a menu option and enter or ${RED_TEXT}enter to exit. ${NORMAL}"
@@ -339,10 +358,12 @@ show_menu(){
         4) clear;
             delete_fn;
             ;;
-                5) clear;
+        5) clear;
             verify_fn;
             ;;
-
+        6) clear;
+            fixdns_fn;
+            ;;
         x)exit;
         ;;
 
