@@ -297,6 +297,12 @@ read vyr
     fi
 cat /etc/bind/named.conf.local| sed "/$dbfile/,+1 d" > /etc/bind/named.conf.local.new
 sudo cp /etc/bind/named.conf.local.new /etc/bind/named.conf.local
+echo "Please Verify that the zone has been deleted in list below"
+lista=$(cat /etc/bind/named.conf.local | grep zone | cut -d '"' -f2 | cut -d '/' -f1)
+echo "generating list of zones in conf file...
+$lista"
+sleep 7
+clear
 show_menu
 }
 ############################################ Fix DNS #########################################
