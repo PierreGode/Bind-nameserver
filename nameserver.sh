@@ -313,7 +313,7 @@ sudo /etc/init.d/networking restart
 echo "Restarting Nameserver"
 sudo service bind9 restart
 clear
-echo if Bind9 is not running please contact administrator
+echo If Bind9 is not running please contact administrator
 echo ""
 service bind9 status
 sleep 7
