@@ -340,7 +340,7 @@ show_menu
 ############################################ fping ###########################################
 
 fping_fn(){
-if [ -d /etc/fping]
+if [ -f /usr/bin/fping ]
 then
 clear
 show_menu
