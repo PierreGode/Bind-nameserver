@@ -271,7 +271,7 @@ $lista
 
 ${NUMBER}Please type the zone you wish to check${END}"
 read Sites
-controlls=$(dig $Sites | grep $Sites)
+controlls=$(dig $Sites | grep $Sites | cut -d '"' -f2 | cut -d ';' -f1 )
 clear
 echo "${NUMBER}plese verify your setup${END}"
 echo $controlls
