@@ -1,3 +1,4 @@
+#!/bin/bash
 #####################################################################################################################
 #                                                                                                                   #
 #                             This script is written by Pierre aka Linoge                                           #
@@ -313,16 +314,41 @@ sudo /etc/init.d/networking restart
 echo "Restarting Nameserver"
 sudo service bind9 restart
 clear
-echo If Bind9 is not running please contact administrator
+echo "If Bind9 is not running please contact administrator"
+echo "please verify that ip address below is 10.237.245.223"
 echo ""
 service bind9 status
-sleep 7
-echo ""
-echo "please verify that ip address below is 10.237.245.223"
-ifconfig | grep "inet addr:" | cut -d ':' -f2 | cut -d 'M' -f3 | cut -d 'B' -f1
-sleep 10
+sleep 3
+  infos11=$(sudo fping www.google.se | grep alive | cut -d 'i' -f1 | cut -d '.' -f2)
+  if [ "$infos11" = "google" ]
+  then
+  echo " * Network connection is working"
+  sleep 3
+  else
+  echo " * No Network connection, please contact Administrator!"
+  sleep 3
+  fi
+ifconf=$(ifconfig | grep "inet addr:" | cut -d ':' -f2 | cut -d 'M' -f3 | cut -d 'B' -f1)
+echo " * Your IP is $ifconf"
+sleep 15
+echo "Going back to menu!"
+sleep 3
 clear
 show_menu
+}
+
+############################################ fping ###########################################
+
+fping_fn(){
+if [ -d /etc/fping]
+then
+clear
+show_menu
+else
+sudo apt-get install fping -y
+clear
+show_menu
+fi
 }
 ############################################ Menu ############################################
 
@@ -343,7 +369,7 @@ show_menu(){
     echo "${MENU}*****************Nameserver By Pierre**************${NORMAL}"
     echo "${ENTER_LINE}Please enter a menu option and enter or ${RED_TEXT}enter to exit. ${NORMAL}"
     read opt
-    while [ $opt != "" ]
+    while [ "$opt" != """" ]
     do
     if [ $opt = "" ]; then
             exit;
@@ -384,4 +410,4 @@ fi
 done
 }
 clear
-show_menu
+fping_fn
