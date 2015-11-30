@@ -316,6 +316,11 @@ show_menu
 
 fixdns_fn(){
 clear
+echo ""
+echo "This will restart services and the DNS-server will go down temporary."
+echo "Are you sure that you want to start the fix (y/n)" 
+  read dnsfix
+    if [ $dnsfix = y ];then
 echo "Restarting Network"
 sudo /etc/init.d/networking restart
 echo "Restarting Nameserver"
@@ -342,6 +347,11 @@ echo "Going back to menu!"
 sleep 3
 clear
 show_menu
+else 
+clear
+show_menu
+fi
+
 }
 
 ############################################ fping ###########################################
@@ -363,7 +373,7 @@ fi
 clear
 show_menu(){
     echo "${ENTER_LINE}      Nameserver is  DNS-server setup script    ${END}"
-    echo "${ENTER_LINE}     Created for Ubuntulinux by Pierre Goude    ${END}"
+    echo "${ENTER_LINE}     Created for Ubuntu by Pierre Goude         ${END}"
     echo "${NORMAL}                                                    ${END}"
     echo "${MENU}*****************Nameserver By Pierre**************${NORMAL}"
     echo "${NORMAL}                                                    ${NORMAL}"
