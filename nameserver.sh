@@ -27,6 +27,11 @@
     END=`echo "\033[0m"`
 # ~~~~~~~~~~  Environment Setup ~~~~~~~~~~ #
 
+############################################### Server setup ###############################################
+#please set the ip of your server here to notify the right nameserver IP for the DNS-fix option
+
+myipsddr=$(echo "10.237.245.223")
+
 #################################### Install Bind9 if its not installed ####################################
 
 install_fn(){
@@ -317,7 +322,7 @@ echo "Restarting Nameserver"
 sudo service bind9 restart
 clear
 echo "If Bind9 is not running please contact administrator"
-echo "please verify that ip address below is 10.237.245.223"
+echo "please verify that ip address below is $myipsddr"
 echo ""
 service bind9 status
 sleep 3
