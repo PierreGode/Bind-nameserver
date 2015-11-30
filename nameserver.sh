@@ -40,6 +40,8 @@ echo "1" > install.log
     sudo apt-get install bind9 -y
         ${END}
     clear
+	seeip=$(ifconfig | grep "inet addr" | grep Bcast | cut -d ':' -f2 | cut -d 'B' -f1)
+	echo "$seeip is your nameserver IP adress, remember to set it in DNS list of Firewall/rourer"  
     nameservers_fn
     else
     clear
@@ -268,13 +270,12 @@ verify_fn(){
 lista=$(cat /etc/bind/named.conf.local | grep zone | cut -d '"' -f2 | cut -d '/' -f1)
 echo "generating list of zones in conf file...
 $lista
-
 ${NUMBER}Please type the zone you wish to check${END}"
 read Sites
-controlls=$(dig $Sites | grep $Sites | cut -d '"' -f2 | cut -d ';' -f1 )
+controlls=$(dig $Sites | grep $Sites | cut -d '"' -f2 | cut -d ';' -f1 | sed 's/86400/TTL 86400/' | sed 's/IN//' | sed 's/A//' | sed 's/NS//')
 clear
 echo "${NUMBER}plese verify your setup${END}"
-echo $controlls
+echo $controlls 
 sleep 10
 clear
 show_menu
@@ -307,6 +308,7 @@ clear
 show_menu
 }
 ############################################ Fix DNS #########################################
+
 fixdns_fn(){
 clear
 echo "Restarting Network"
@@ -350,6 +352,7 @@ clear
 show_menu
 fi
 }
+
 ############################################ Menu ############################################
 
 clear
